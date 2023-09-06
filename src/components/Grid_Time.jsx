@@ -67,6 +67,9 @@ const ControlTiempoDetalle = () => {
             <p>
               <strong>Teléfono:</strong> {clienteDetalle.phone}
             </p>
+            <p>
+              <strong>Correo:</strong> {clienteDetalle.email}
+            </p>
           </section>
           <section>
             <h3 className="text-xl">Control de tiempo:</h3>
@@ -79,6 +82,12 @@ const ControlTiempoDetalle = () => {
                     </p>
                     <p>
                       <strong>Minutos:</strong> {item.minutes_spent}
+                    </p>
+                    <p>
+                      <strong>Color Manilla:</strong> {item.handleColor}
+                    </p>
+                    <p>
+                      <strong># Consentimiento</strong> {item.consentNumber}
                     </p>
                   </li>
                 ))}

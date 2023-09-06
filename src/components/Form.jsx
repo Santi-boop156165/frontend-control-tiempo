@@ -13,6 +13,15 @@ const Form = () => {
   const [controlTiempoFields, setControlTiempoFields] = useState([]);
   const [clientData, setClientData] = useState({});
   const { register, handleSubmit, setValue } = useForm();
+  
+  const [addedControlFields, setAddedControlFields] = useState(false);
+
+  const handleAddControlFields = () => {
+    if (!addedControlFields) {
+      setControlTiempoFields([...controlTiempoFields, {}]);
+      setAddedControlFields(true);
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -31,7 +40,7 @@ const Form = () => {
     } catch (error) {
       console.log(error + "ads");
       const dataError = error.response.data;
-      console.log(dataError);
+
 
       const keys = Object.keys(dataError);
       for (let i = 0; i < keys.length; i++) {
@@ -126,41 +135,52 @@ const Form = () => {
           placeholder="Escribe tu telefono"
           {...register("phone")}
         />
-
+        <input
+          className="w-full p-2 mb-4 border rounded"
+          type="email"
+          min="0"
+          autoComplete="off"
+          placeholder="Escribe tu email"
+          {...register("email")}
+        />
         <button
           type="button"
           className="flex flex-col"
-          onClick={() => {
-            setControlTiempoFields([...controlTiempoFields, {}]);
-          }}
+          onClick={handleAddControlFields} 
         >
-          Agregar Tiempo 
+          Agregar Tiempo
         </button>
         {controlTiempoFields.map((control, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={index} className="flex flex-col gap-2 mt-2 items-center justify-center">
             <input
               type="date"
-              className=" p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
               {...register(`control_tiempo[${index}].date`)}
               placeholder="Fecha"
             />
             <input
-            className=" w-24 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
               type="number"
               min="0"
               placeholder="Minutos"
               {...register(`control_tiempo[${index}].minutes_spent`)}
             />
-            <button
-              type="button"
-              onClick={() => {
-                const newFields = [...controlTiempoFields];
-                newFields.splice(index, 1);
-                setControlTiempoFields(newFields);
-              }}
-            >
-              Eliminar
-            </button>
+            <input
+              className="w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              type="number"
+              min="0"
+              autoComplete="off"
+              placeholder="# Consentimiento"
+              {...register(`control_tiempo[${index}].consentNumber`)}
+            />
+             <input
+              className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              type="text"
+              min="0"
+              autoComplete="off"
+              placeholder="Color Manilla"
+              {...register(`control_tiempo[${index}].handleColor`)}
+            />
           </div>
         ))}
         <div className="flex flex-col p-6 gap-4">

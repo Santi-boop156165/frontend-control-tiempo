@@ -85,6 +85,9 @@ const Grid = () => {
                   Teléfono
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-medium">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-medium">
                   Ver control de tiempo
                 </th>
               </tr>
@@ -104,6 +107,9 @@ const Grid = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {cliente.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {cliente.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                    <NavLink to={`/control/${cliente.id}`}
