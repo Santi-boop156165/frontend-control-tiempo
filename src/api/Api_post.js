@@ -23,4 +23,16 @@ export const sendUserData = async (data) => {
   }
 }
 
+export const sendTiming = async (data) => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/control_tiempo', data);
+    return response.data;
+  }catch (error){
+    console.log(error);
+    throw error;
+  }
+}
+
+
+
 

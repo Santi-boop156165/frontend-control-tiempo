@@ -28,3 +28,13 @@ export async function ApiGetUsers(){
     console.log(err);
   }
 }
+
+export async function ApiGetTime(id){
+  try{
+    const response = await axios.get(`http://127.0.0.1:8000/api/control_tiempo/${id}`);
+    return response.data;
+  }catch (error){
+    console.log(error);
+  }
+
+}

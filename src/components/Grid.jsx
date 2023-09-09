@@ -13,13 +13,11 @@ const Grid = () => {
     if(search.length === 0){
       return data.slice(currentPage, currentPage + 6);
     }else{
-      const filtered = data.filter(cliente => cliente.first_name.includes(search));
+      const filtered = data.filter(cliente => cliente.identification.includes(search));
       return filtered.slice(currentPage, currentPage + 6)
       
-
   }
 }
-
   const nextPage = () => {
 
     if(data.filter(cliente => cliente.first_name.includes(search)).length > currentPage + 6){

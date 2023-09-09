@@ -24,6 +24,12 @@ const Menu = () => {
           >
             Ver Clientes Dentro del Local
           </NavLink>
+          <NavLink
+          to={`/reporte`}
+            className="block bg-yellow-300 text-white py-2 px-4 rounded-md hover:bg-yellow-600 mt-4"
+          >
+            Generar Reporte
+          </NavLink>
         </div>
       </div>
     );

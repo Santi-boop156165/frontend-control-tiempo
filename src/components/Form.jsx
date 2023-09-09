@@ -13,7 +13,6 @@ const Form = () => {
   const [controlTiempoFields, setControlTiempoFields] = useState([]);
   const [clientData, setClientData] = useState({});
   const { register, handleSubmit, setValue } = useForm();
-  
   const [addedControlFields, setAddedControlFields] = useState(false);
 
   const handleAddControlFields = () => {
@@ -27,21 +26,26 @@ const Form = () => {
     try {
       if (!params.clienteId) {
         await SendData(data);
-        await sendUserData(data);
+        if (data.control_tiempo && data.control_tiempo.length > 0) {
+          await sendUserData(data);
+        }
         toast.success("Registro exitoso");
         navigate("/clientes");
       } else {
         console.log(data);
         await ApiUpdateById(clientData.id, data);
-        await sendUserData(data);
+  
+        if (data.control_tiempo && data.control_tiempo.length > 0) {
+          await sendUserData(data);
+        }
+  
         toast.success("Actualizacion exitosa");
         navigate("/clientes");
       }
     } catch (error) {
       console.log(error + "ads");
       const dataError = error.response.data;
-
-
+  
       const keys = Object.keys(dataError);
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
@@ -51,7 +55,6 @@ const Form = () => {
       }
     }
   };
-
   const getClient = async () => {
     try {
       const response = await ApiGetById(params.clienteId);
@@ -145,21 +148,27 @@ const Form = () => {
         />
         <button
           type="button"
+          required
           className="flex flex-col"
-          onClick={handleAddControlFields} 
+          onClick={handleAddControlFields}
         >
           Agregar Tiempo
         </button>
         {controlTiempoFields.map((control, index) => (
-          <div key={index} className="flex flex-col gap-2 mt-2 items-center justify-center">
+          <div
+            key={index}
+            className="flex flex-col gap-2 mt-2 items-center justify-center"
+          >
             <input
               type="date"
+              required 
               className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
               {...register(`control_tiempo[${index}].date`)}
               placeholder="Fecha"
             />
             <input
               className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              required
               type="number"
               min="0"
               placeholder="Minutos"
@@ -167,14 +176,16 @@ const Form = () => {
             />
             <input
               className="w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              required
               type="number"
               min="0"
               autoComplete="off"
               placeholder="# Consentimiento"
               {...register(`control_tiempo[${index}].consentNumber`)}
             />
-             <input
+            <input
               className=" w-52 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-400 focus:border-blue-400"
+              required
               type="text"
               min="0"
               autoComplete="off"
