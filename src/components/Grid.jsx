@@ -4,50 +4,46 @@ import { NavLink } from "react-router-dom";
 
 const Grid = () => {
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState(0); 
   const [search, setSearch] = useState("");
-
-
-  const filteredClients  = () =>{
-
-    if(search.length === 0){
-      return data.slice(currentPage, currentPage + 6);
-    }else{
-      const filtered = data.filter(cliente => cliente.identification.includes(search));
-      return filtered.slice(currentPage, currentPage + 6)
-      
-  }
-}
-  const nextPage = () => {
-
-    if(data.filter(cliente => cliente.first_name.includes(search)).length > currentPage + 6){
-      setCurrentPage(currentPage + 6);
-    }
-
   
-  }
+  const fetchData = async () => {
+    const response = await ApiGet(currentPage);
+    setData(response.clientes);
+    setTotalPages(response.total_pages);
+  };
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]); // Llamar fetchData cada vez que currentPage cambia
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const previewPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 6);
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
-  }
+  };
+
+  const filteredClients = () => {
+    if (search.length === 0) {
+      return data; // Datos ya paginados desde el servidor
+    } else {
+      return data.filter(cliente => cliente.identification.includes(search));
+    }
+  };
+
 
   const onSearch = (e) => {
-    setCurrentPage(0);
+    setCurrentPage(1); 
     setSearch(e.target.value);
-  }
+  };
   
 
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await ApiGet();
-      setData(response.clientes);
-     
-    }
-    fetchData();
-  }, []);
 
   
 

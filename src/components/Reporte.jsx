@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ApiGet } from "../api/Api_get";
+import { ApiGetData } from "../api/Api_get";
 import ButtonDowloadExcel from "./ButtonDowloadExcel";
 import ButtonDowloadPdf from "./ButtonDowloadPdf";
 
@@ -7,11 +7,12 @@ const Reporte = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      const response = await ApiGet();
+      const response = await ApiGetData();
       setData(response.clientes);
     }
     fetchData();
   }, []);
+  
 
   return (
     <main className="flex justify-center items-center h-screen bg-gradient-to-b from-blue-200 to-green-100 ">

@@ -66,6 +66,10 @@ const MyDoc = ({ data }) => (
             <View style={styles.tableCol}>
               <Text style={styles.tableCell}>Manilla</Text>
             </View>
+            
+            <View style={styles.tableCol}>
+              <Text style={styles.tableCell}>identificacion</Text>
+            </View>
           </View>
 
           {data.map((cliente, index) => (
@@ -94,6 +98,11 @@ const MyDoc = ({ data }) => (
                   {cliente.control_tiempo_handleColor}
                 </Text>
               </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>
+                  {cliente.identification}
+                </Text>
+              </View>
             </View>
           ))}
         </View>
@@ -107,35 +116,35 @@ const ButtonDowloadPdf = ({ data }) => {
     .toISOString()
     .split("T")[0];
 
-  const flattenControlTiempo = (clientes) => {
-    const flattenedData = [];
-
-    clientes.forEach((cliente) => {
-      const lastControl = cliente.control_tiempo.slice().sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-      })[0];
-
-      if (lastControl && lastControl.date === currentDateISO) {
-        flattenedData.push({
-          id: cliente.id,
-          first_name: cliente.first_name,
-          second_name: cliente.second_name,
-          first_surname: cliente.first_surname,
-          second_surname: cliente.second_surname,
-          age: cliente.age,
-          identification: cliente.identification,
-          phone: cliente.phone,
-          email: cliente.email,
-          control_tiempo_date: lastControl.date,
-          control_tiempo_minutes_spent: lastControl.minutes_spent,
-          control_tiempo_consentNumber: lastControl.consentNumber,
-          control_tiempo_handleColor: lastControl.handleColor,
+    const flattenControlTiempo = (clientes) => {
+      const flattenedData = [];
+    
+      clientes.forEach((cliente) => {
+        // Filtra todos los controles de tiempo que tienen la fecha actual
+        const controlsWithCurrentDate = cliente.control_tiempo.filter(control => control.date === currentDateISO);
+    
+        // Si existen, añade un nuevo objeto para cada uno de ellos
+        controlsWithCurrentDate.forEach(control => {
+          flattenedData.push({
+            id: cliente.id,
+            first_name: cliente.first_name,
+            second_name: cliente.second_name,
+            first_surname: cliente.first_surname,
+            second_surname: cliente.second_surname,
+            age: cliente.age,
+            identification: cliente.identification,
+            phone: cliente.phone,
+            email: cliente.email,
+            control_tiempo_date: control.date,
+            control_tiempo_minutes_spent: control.minutes_spent,
+            control_tiempo_consentNumber: control.consentNumber,
+            control_tiempo_handleColor: control.handleColor,
+          });
         });
-      }
-    });
-
-    return flattenedData;
-  };
+      });
+    
+      return flattenedData;
+    };
 
   const flattenedData = flattenControlTiempo(data);
 

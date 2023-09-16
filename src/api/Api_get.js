@@ -1,14 +1,13 @@
 import axios from "axios";
 
-export async function ApiGet(){
-    try {
-      const response = await axios.get('http://localhost:8000/api/clientes');
-      return response.data;
-    }catch (error){
-      console.log(error);
-    }
+export async function ApiGet(pageNumber = 1) {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/clientes?page=${pageNumber}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 }
-
 
 export async function ApiGetById(id){
   try {
@@ -37,4 +36,16 @@ export async function ApiGetTime(id){
     console.log(error);
   }
 
+
 }
+
+
+export async function ApiGetData(){
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/data');
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
