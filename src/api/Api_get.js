@@ -42,7 +42,7 @@ export async function ApiGetTime(id){
 
 export async function ApiGetData(){
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/data');
+    const response = await axios.get('http://127.0.0.1:8000/api/data_full');
     return response.data;
   } catch (err) {
     console.log(err);
