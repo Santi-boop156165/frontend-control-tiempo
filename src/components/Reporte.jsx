@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ApiGetData } from "../api/Api_get";
 import ButtonDowloadExcel from "./ButtonDowloadExcel";
 import ButtonDowloadPdf from "./ButtonDowloadPdf";
-
+import { NavLink } from "react-router-dom";
+import {  FaHome } from "react-icons/fa";
 const Reporte = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -23,6 +24,14 @@ const Reporte = () => {
         </div>
         <div className="block bg-red-300 text-white py-2 px-4 rounded-md hover:bg-red-600 mt-4">
           <ButtonDowloadPdf data={data} />
+        </div>
+        <div className="mt-24 flex justify-center">
+          <NavLink
+          className={` bg-yellow-300 text-white py-2 px-4 rounded-md hover:bg-yellow-600 mt-4 flex items-center`}
+            to={`/`}
+          >
+            Volver al menu <FaHome className="text-xl ml-4" />
+          </NavLink>
         </div>
       </section>
     </main>

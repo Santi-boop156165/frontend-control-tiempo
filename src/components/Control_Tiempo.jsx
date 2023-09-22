@@ -56,6 +56,7 @@ const Control_Tiempo = () => {
             name={`${cliente.first_name} ${cliente.second_name}`}
             minutes={cliente.control_tiempo[0].minutes_spent}
             handleColor={cliente.control_tiempo[0].handleColor}
+            identifications={cliente.identification}
           />
           <button
            className=" transform transition-all duration-200 hover:-translate-y-1 

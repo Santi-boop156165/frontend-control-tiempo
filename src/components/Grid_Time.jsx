@@ -128,7 +128,7 @@ const ControlTiempoDetalle = () => {
         <footer className="flex flex-col justify-center mt-4 gap-6">
           <NavLink
             to={`/`}
-            className="bg-indigo-500 text-white  text-center  py-2 px-4 rounded-md hover:bg-indigo-600"
+            className="bg-green-400 text-white  text-center  py-2 px-4 rounded-md hover:bg-green-600"
           >
             Volver al menú principal
           </NavLink>

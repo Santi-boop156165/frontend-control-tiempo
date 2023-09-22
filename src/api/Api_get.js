@@ -1,14 +1,14 @@
 import axios from "axios";
 
-export async function ApiGet(pageNumber = 1) {
+export async function ApiGet(pageNumber = 1, search = "") {
   try {
-    const response = await axios.get(`http://localhost:8000/api/clientes?page=${pageNumber}`);
+    const url = `http://localhost:8000/api/clientes?page=${pageNumber}&search=${search}`;
+    const response = await axios.get(url);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 }
-
 export async function ApiGetById(id){
   try {
     const response = await axios.get(`http://localhost:8000/api/clientes/${id}`);
