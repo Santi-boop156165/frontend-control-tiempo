@@ -3,29 +3,25 @@ import React, { useState, useEffect } from 'react';
 
 
 const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
-  const initialRemainingTime = parseInt(localStorage.getItem(`remainingTime_${id}`)) || minutes * 60;
-  const [remainingTime, setRemainingTime] = useState(initialRemainingTime);
+  const [remainingTime, setRemainingTime] = useState(minutes * 60);
   const [isRedBackground, setIsRedBackground] = useState(false);
+  let worker;
 
   useEffect(() => {
-    if (remainingTime > 1) {
-      const timer = setTimeout(() => {
-        setRemainingTime((prevTime) => {
-          const newTime = prevTime - 1;
-          localStorage.setItem(`remainingTime_${id}`, newTime);
+    worker = new Worker('/timerWorker.js');
+    worker.postMessage({ start: true });
+    
+    worker.addEventListener('message', function(event) {
+      console.log("Mensaje recibido en el componente:", event.data);
+      const deltaTime = event.data / 1000; // Convertir a segundos
+      setRemainingTime(prevTime => prevTime - deltaTime);
+    });
+  
+    return () => {
+      worker.terminate();
+    };
+  }, []);
 
-          if (newTime === 20 && !isRedBackground) { 
-            setIsRedBackground(true);
-            localStorage.setItem(`isRedBackground_${id}`, 'true'); 
-          }
-
-          return newTime;
-        });
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [remainingTime, name, isRedBackground]);
 
   useEffect(() => {
     const storedIsRedBackground = localStorage.getItem(`isRedBackground_${id}`);
@@ -35,8 +31,9 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
   }, [name]);
 
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const roundedSeconds = Math.round(seconds); // Redondea al segundo más cercano
+    const mins = Math.floor(roundedSeconds / 60);
+    const secs = roundedSeconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 

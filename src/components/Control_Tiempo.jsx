@@ -53,7 +53,7 @@ const Control_Tiempo = () => {
         <div key={cliente.id} className="flex flex-col gap-2">
           <TimerCard
             id={cliente.id}
-            name={`${cliente.first_name} ${cliente.second_name}`}
+            name={`${cliente.first_name} ${cliente.first_surname}`}
             minutes={cliente.control_tiempo[0].minutes_spent}
             handleColor={cliente.control_tiempo[0].handleColor}
             identifications={cliente.identification}
