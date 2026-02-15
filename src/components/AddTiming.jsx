@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ApiGetTime } from "../api/Api_get";
 import { ApiGetById } from "../api/Api_get";
 import { ApiUpdateTime } from "../api/Api_put";
 import { sendTiming } from "../api/Api_post";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
+
 const AddTiming = () => {
   const params = useParams();
   const [clientData, setClientData] = useState({});
-  const [clienteTiempo, setClienteTiempo] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     date: "",
@@ -19,33 +18,11 @@ const AddTiming = () => {
     annotations: "",
   });
 
-  const itemsPerPage = 4;
-
-  const itemsTimePagination = () => {
-    return clienteTiempo
-      ? clienteTiempo.slice(currentPage, currentPage + itemsPerPage)
-      : [];
-  };
-
-  const nextPage = () => {
-    if (currentPage + itemsPerPage < clienteTiempo.length) {
-      setCurrentPage(currentPage + itemsPerPage);
-    }
-  }
-
-  const previewPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - itemsPerPage);
-    }
-  }
-
   const getClient = async () => {
     try {
       const response = await ApiGetById(params.clientId);
-
       const time = await ApiGetTime(params.clientId);
       setClientData(response.cliente);
-      setClienteTiempo(time.control_tiempo);
 
       if (params.timeId) {
         const existingTime = time.control_tiempo.find(
@@ -77,12 +54,12 @@ const AddTiming = () => {
       if (params.timeId) {
         await ApiUpdateTime(params.clientId, params.timeId, formData);
         toast.success("Actualización exitosa");
-        navigate("/clientes");
+        navigate(`/control_tiempo/${params.clientId}`);
       } else {
         formData.cliente = params.clienteId;
         await sendTiming(formData);
-        console.log(formData);
         toast.success("Registro exitoso");
+        navigate(`/control_tiempo/${params.clientId}`);
       }
 
       setFormData({
@@ -99,176 +76,140 @@ const AddTiming = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-4">
-        Horarios del Cliente: {clientData.first_name}
-      </h2>
+    <main className="flex items-center justify-center bg-gradient-to-b from-slate-200 to-green-100 min-h-screen p-8">
+      <section className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-2xl p-8 md:p-12 relative">
+        {/* Botón de retorno */}
+        <NavLink
+          to={`/control/${params.clientId}`}
+          className="absolute top-6 left-6 text-gray-600 hover:text-gray-900 transition-all hover:scale-110"
+          title="Volver atrás"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </NavLink>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300 divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">
-                Fecha
-              </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">
-                Minutos
-              </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">
-                Número de Consentimiento
-              </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">
-                Color
-              </th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-500">
-                Notas
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Map through your 'clienteTiempo' data here */}
-            {itemsTimePagination().map((time, index) => (
-              <tr
-                key={index}
-                className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+        {/* Header */}
+        <header className="mb-8 pt-4">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
+            {params.timeId ? "Editar Registro" : "Agregar Tiempo"}
+          </h2>
+          <p className="text-center text-gray-600">
+            Cliente: <span className="font-semibold">{clientData.first_name}</span>
+          </p>
+        </header>
+
+        {/* Formulario */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-5">
+            {/* Fecha */}
+            <div>
+              <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
+                Fecha:
+              </label>
+              <input
+                type="date"
+                name="date"
+                id="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+              />
+            </div>
+
+            {/* Minutos */}
+            <div>
+              <label htmlFor="minutes_spent" className="block text-sm font-semibold text-gray-700 mb-2">
+                Minutos:
+              </label>
+              <input
+                type="number"
+                name="minutes_spent"
+                id="minutes_spent"
+                value={formData.minutes_spent}
+                onChange={handleInputChange}
+                required
+                min="1"
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+              />
+            </div>
+
+            {/* Número de Consentimiento */}
+            <div>
+              <label htmlFor="consentNumber" className="block text-sm font-semibold text-gray-700 mb-2">
+                Número de Consentimiento:
+              </label>
+              <input
+                type="text"
+                name="consentNumber"
+                id="consentNumber"
+                value={formData.consentNumber}
+                onChange={handleInputChange}
+                required
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+              />
+            </div>
+
+            {/* Color de Manilla */}
+            <div>
+              <label htmlFor="handleColor" className="block text-sm font-semibold text-gray-700 mb-2">
+                Color de Manilla:
+              </label>
+              <select
+                name="handleColor"
+                id="handleColor"
+                value={formData.handleColor}
+                onChange={handleInputChange}
+                required
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all bg-white"
               >
-                <td className="py-2 px-4 text-sm text-gray-600">{time.date}</td>
-                <td className="py-2 px-4 text-sm text-gray-600">
-                  {time.minutes_spent}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-600">
-                  {time.consentNumber}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-600">
-                  {time.handleColor}
-                </td>
-                <td className="py-2 px-4 text-sm text-gray-600">
-                  {time.annotations}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {clienteTiempo.length > 0 && (
-          <div className="flex justify-end  gap-6 items-center mt-4">
+                <option value="">Seleccionar color</option>
+                <option value="verde">Verde</option>
+                <option value="rojo">Rojo</option>
+                <option value="azul">Azul</option>
+                <option value="amarillo">Amarillo</option>
+                <option value="morado">Morado</option>
+                <option value="naranja">Naranja</option>
+              </select>
+            </div>
+
+            {/* Anotaciones */}
+            <div>
+              <label htmlFor="annotations" className="block text-sm font-semibold text-gray-700 mb-2">
+                Notas (opcional):
+              </label>
+              <textarea
+                name="annotations"
+                id="annotations"
+                value={formData.annotations}
+                onChange={handleInputChange}
+                rows="4"
+                placeholder="Agregar notas o comentarios adicionales..."
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="flex gap-4 pt-4">
             <button
-              onClick={previewPage}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button"
+              onClick={() => navigate(`/control_tiempo/${params.clientId}`)}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
-              Anterior
+              Cancelar
             </button>
             <button
-              onClick={nextPage}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              Siguiente
+              {params.timeId ? "✓ Actualizar" : "✓ Registrar"}
             </button>
           </div>
-        )}
-      </div>
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-        <h3 className="text-lg font-semibold mb-4">
-          Editar tiempo en Base de datos:
-        </h3>
-
-        <div className="flex flex-col mb-4">
-          <label
-            htmlFor="date"
-            className="mb-1 text-sm font-medium text-gray-600"
-          >
-            Fecha:
-          </label>
-          <input
-            type="date"
-            name="date"
-            id="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            required
-            className="border rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="flex flex-col mb-4">
-          <label
-            htmlFor="minutes_spent"
-            className="mb-1 text-sm font-medium text-gray-600"
-          >
-            Minutos:
-          </label>
-          <input
-            type="number"
-            name="minutes_spent"
-            id="minutes_spent"
-            value={formData.minutes_spent}
-            onChange={handleInputChange}
-            required
-            className="border rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="flex flex-col mb-4">
-          <label
-            htmlFor="consentNumber"
-            className="mb-1 text-sm font-medium text-gray-600"
-          >
-            Número de Consentimiento:
-          </label>
-          <input
-            type="text"
-            name="consentNumber"
-            id="consentNumber"
-            value={formData.consentNumber}
-            onChange={handleInputChange}
-            required
-            className="border rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="flex flex-col mb-4">
-          <label
-            htmlFor="handleColor"
-            className="mb-1 text-sm font-medium text-gray-600"
-          >
-            Color:
-          </label>
-          <input
-            type="text"
-            name="handleColor"
-            id="handleColor"
-            value={formData.handleColor}
-            onChange={handleInputChange}
-            required
-            className="border rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="flex flex-col mb-4">
-          <label
-            htmlFor="annotations"
-            className="mb-1 text-sm font-medium text-gray-600"
-          >
-            Notas:
-          </label>
-          <input
-            type="text"
-            name="annotations"
-            id="annotations"
-            value={formData.annotations}
-            onChange={handleInputChange}
-            className="border rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          {params.timeId ? "Actualizar" : "Registrar"}
-        </button>
-      </form>
-    </div>
+        </form>
+      </section>
+    </main>
   );
 };
 

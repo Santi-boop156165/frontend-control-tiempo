@@ -6,7 +6,7 @@ export async function ApiUpdateById(id, updatedData) {
       return response.data;
     } catch (error) {
       console.log(error);
-      throw error; // Re-lanzamos el error para manejarlo en otro lugar si es necesario
+      throw error;
     }
   }
 
