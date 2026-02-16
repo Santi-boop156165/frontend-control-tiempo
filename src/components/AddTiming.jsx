@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ApiGetTime } from "../api/Api_get";
 import { ApiGetById } from "../api/Api_get";
 import { ApiUpdateTime } from "../api/Api_put";
-import { sendTiming } from "../api/Api_post";
+import { sendTiming, sendUserData } from "../api/Api_post";
 import { useNavigate, useParams, NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -26,7 +26,7 @@ const AddTiming = () => {
 
       if (params.timeId) {
         const existingTime = time.control_tiempo.find(
-          (t) => t.id === parseInt(params.timeId, 10)
+          (t) => t.id === parseInt(params.timeId, 10),
         );
         if (existingTime) {
           setFormData(existingTime);
@@ -54,12 +54,22 @@ const AddTiming = () => {
       if (params.timeId) {
         await ApiUpdateTime(params.clientId, params.timeId, formData);
         toast.success("Actualización exitosa");
-        navigate(`/control_tiempo/${params.clientId}`);
+        navigate(`/control/${params.clientId}`);
       } else {
         formData.cliente = params.clienteId;
         await sendTiming(formData);
+
+        // Sincronizar con la API de usuarios para que aparezca en Control_Tiempo
+        const updatedClient = await ApiGetById(params.clienteId);
+        const updatedTime = await ApiGetTime(params.clienteId);
+        const fullClientData = {
+          ...updatedClient.cliente,
+          control_tiempo: updatedTime.control_tiempo,
+        };
+        await sendUserData(fullClientData);
+
         toast.success("Registro exitoso");
-        navigate(`/control_tiempo/${params.clientId}`);
+        navigate(`/tiempo`);
       }
 
       setFormData({
@@ -84,8 +94,18 @@ const AddTiming = () => {
           className="absolute top-6 left-6 text-gray-600 hover:text-gray-900 transition-all hover:scale-110"
           title="Volver atrás"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
         </NavLink>
 
@@ -95,7 +115,8 @@ const AddTiming = () => {
             {params.timeId ? "Editar Registro" : "Agregar Tiempo"}
           </h2>
           <p className="text-center text-gray-600">
-            Cliente: <span className="font-semibold">{clientData.first_name}</span>
+            Cliente:{" "}
+            <span className="font-semibold">{clientData.first_name}</span>
           </p>
         </header>
 
@@ -104,7 +125,10 @@ const AddTiming = () => {
           <div className="space-y-5">
             {/* Fecha */}
             <div>
-              <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="date"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Fecha:
               </label>
               <input
@@ -120,7 +144,10 @@ const AddTiming = () => {
 
             {/* Minutos */}
             <div>
-              <label htmlFor="minutes_spent" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="minutes_spent"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Minutos:
               </label>
               <input
@@ -137,7 +164,10 @@ const AddTiming = () => {
 
             {/* Número de Consentimiento */}
             <div>
-              <label htmlFor="consentNumber" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="consentNumber"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Número de Consentimiento:
               </label>
               <input
@@ -153,7 +183,10 @@ const AddTiming = () => {
 
             {/* Color de Manilla */}
             <div>
-              <label htmlFor="handleColor" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="handleColor"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Color de Manilla:
               </label>
               <select
@@ -176,7 +209,10 @@ const AddTiming = () => {
 
             {/* Anotaciones */}
             <div>
-              <label htmlFor="annotations" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="annotations"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Notas (opcional):
               </label>
               <textarea
@@ -195,7 +231,7 @@ const AddTiming = () => {
           <div className="flex gap-4 pt-4">
             <button
               type="button"
-              onClick={() => navigate(`/control_tiempo/${params.clientId}`)}
+              onClick={() => navigate(`/control/${params.clientId}`)}
               className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               Cancelar

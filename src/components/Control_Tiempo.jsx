@@ -14,14 +14,22 @@ const Control_Tiempo = () => {
     );
     if (confirmed) {
       try {
-        await ApiDeleteByUserId(userId);
-        setData((prevData) =>
-          prevData.filter((cliente) => cliente.id !== userId),
-        );
-        // Limpiar todos los datos relacionados en localStorage
-        localStorage.removeItem(`startTime_${userId}`);
-        localStorage.removeItem(`initialTime_${userId}`);
-        localStorage.removeItem(`isRedBackground_${userId}`);
+        // Eliminar del caché temporal (usuarios)
+        const userDeleted = await ApiDeleteByUserId(userId);
+
+        if (userDeleted) {
+          setData((prevData) =>
+            prevData.filter((cliente) => cliente.id !== userId),
+          );
+          // Limpiar todos los datos relacionados en localStorage
+          localStorage.removeItem(`startTime_${userId}`);
+          localStorage.removeItem(`initialTime_${userId}`);
+          localStorage.removeItem(`isRedBackground_${userId}`);
+        } else {
+          console.error(
+            "No se pudo completar la eliminación en todas las APIs",
+          );
+        }
       } catch (error) {
         console.error("Error al eliminar cliente:", error);
       }
@@ -32,13 +40,18 @@ const Control_Tiempo = () => {
     async function fetchData() {
       try {
         const response = await ApiGetUsers();
-        // Filtrar solo clientes que tengan control_tiempo válido
-        const validClientes = (response.clientes || []).filter(
-          (cliente) =>
-            cliente.control_tiempo &&
-            Array.isArray(cliente.control_tiempo) &&
-            cliente.control_tiempo.length > 0,
-        );
+        // Normalizar y filtrar clientes que tengan control_tiempo válido
+        const validClientes = (response.clientes || []).filter((cliente) => {
+          if (!cliente.control_tiempo) return false;
+
+          // Si es un objeto, convertirlo a array
+          if (!Array.isArray(cliente.control_tiempo)) {
+            cliente.control_tiempo = [cliente.control_tiempo];
+          }
+        console.log("Cliente:", cliente);
+          return cliente.control_tiempo.length > 0;
+        });
+        console.log("Clientes válidos:", validClientes);
         setData(validClientes);
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -91,8 +104,13 @@ const Control_Tiempo = () => {
         {data.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {data.map((cliente) => {
-              // Validación adicional de seguridad
-              const controlTiempo = cliente.control_tiempo?.[0];
+              // Obtener el último registro de control_tiempo (más reciente)
+              const controlTiempoArray = Array.isArray(cliente.control_tiempo)
+                ? cliente.control_tiempo
+                : [cliente.control_tiempo];
+              const controlTiempo =
+                controlTiempoArray[controlTiempoArray.length - 1];
+
               if (!controlTiempo) return null;
 
               return (

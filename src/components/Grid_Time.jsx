@@ -247,7 +247,7 @@ const ControlTiempoDetalle = () => {
         <footer className="flex justify-center">
           {clienteId && (
             <NavLink
-              to={`/update/${clienteId}`}
+              to={`/add_time/${clienteId}`}
               className="inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-8 rounded-xl hover:from-green-600 hover:to-green-700 text-center font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <svg

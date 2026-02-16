@@ -7,14 +7,22 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
   const initialTimeRef = useRef(null);
   const intervalRef = useRef(null);
   const isInitializedRef = useRef(false);
+  const lastMinutesRef = useRef(null); // Para detectar cambios en minutes
 
-  // Inicializar o recuperar el estado del timer (solo una vez por ID)
+  // Inicializar o recuperar el estado del timer
   useEffect(() => {
-    // Prevenir re-inicialización si ya se hizo
-    if (isInitializedRef.current) return;
-
     // Validar que minutes sea un número válido
     const validMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : 0;
+    const newInitialTime = validMinutes * 60;
+
+    // Detectar si los minutos cambiaron
+    const minutesChanged = lastMinutesRef.current !== null && lastMinutesRef.current !== validMinutes;
+    
+    // Si ya se inicializó y los minutos no cambiaron, no hacer nada
+    if (isInitializedRef.current && !minutesChanged) return;
+
+    // Actualizar referencia de los últimos minutos
+    lastMinutesRef.current = validMinutes;
 
     const storedStartTime = localStorage.getItem(`startTime_${id}`);
     const storedInitialTime = localStorage.getItem(`initialTime_${id}`);
@@ -24,8 +32,18 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
       setIsRedBackground(true);
     }
 
-    // Si existe un timer guardado, recuperarlo
-    if (storedStartTime && storedInitialTime) {
+    // Si los minutos cambiaron, reiniciar el timer
+    if (minutesChanged) {
+      startTimeRef.current = Date.now();
+      initialTimeRef.current = newInitialTime;
+      localStorage.setItem(`startTime_${id}`, startTimeRef.current.toString());
+      localStorage.setItem(`initialTime_${id}`, initialTimeRef.current.toString());
+      // Resetear fondo rojo
+      setIsRedBackground(false);
+      localStorage.removeItem(`isRedBackground_${id}`);
+    }
+    // Si existe un timer guardado y es la primera inicialización, recuperarlo
+    else if (storedStartTime && storedInitialTime) {
       const parsedStartTime = parseInt(storedStartTime, 10);
       const parsedInitialTime = parseInt(storedInitialTime, 10);
 
@@ -36,7 +54,7 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
       } else {
         // Si los datos guardados son inválidos, crear nuevo timer
         startTimeRef.current = Date.now();
-        initialTimeRef.current = validMinutes * 60;
+        initialTimeRef.current = newInitialTime;
         localStorage.setItem(
           `startTime_${id}`,
           startTimeRef.current.toString(),
@@ -49,7 +67,7 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
     } else {
       // Si no existe, crear uno nuevo
       startTimeRef.current = Date.now();
-      initialTimeRef.current = validMinutes * 60;
+      initialTimeRef.current = newInitialTime;
       localStorage.setItem(`startTime_${id}`, startTimeRef.current.toString());
       localStorage.setItem(
         `initialTime_${id}`,
@@ -64,7 +82,7 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
 
     // Marcar como inicializado
     isInitializedRef.current = true;
-  }, [id]); // Solo depende de id, NO de minutes
+  }, [id, minutes]); // Depende de id y minutes
 
   // Actualizar el tiempo cada segundo
   useEffect(() => {
