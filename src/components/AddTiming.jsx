@@ -20,8 +20,8 @@ const AddTiming = () => {
 
   const getClient = async () => {
     try {
-      const response = await ApiGetById(params.clientId);
-      const time = await ApiGetTime(params.clientId);
+      const response = await ApiGetById(params.clienteId);
+      const time = await ApiGetTime(params.clienteId);
       setClientData(response.cliente);
 
       if (params.timeId) {
@@ -38,10 +38,10 @@ const AddTiming = () => {
   };
 
   useEffect(() => {
-    if (params.clientId) {
-      getClient(params.clientId);
+    if (params.clienteId) {
+      getClient();
     }
-  }, [params.clientId, params.timeId]);
+  }, [params.clienteId, params.timeId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,9 +52,9 @@ const AddTiming = () => {
     e.preventDefault();
     try {
       if (params.timeId) {
-        await ApiUpdateTime(params.clientId, params.timeId, formData);
+        await ApiUpdateTime(params.clienteId, params.timeId, formData);
         toast.success("Actualización exitosa");
-        navigate(`/control/${params.clientId}`);
+        navigate(`/control/${params.clienteId}`);
       } else {
         formData.cliente = params.clienteId;
         await sendTiming(formData);
@@ -90,7 +90,7 @@ const AddTiming = () => {
       <section className="max-w-2xl w-full mx-auto bg-white rounded-xl shadow-2xl p-8 md:p-12 relative">
         {/* Botón de retorno */}
         <NavLink
-          to={`/control/${params.clientId}`}
+          to={`/control/${params.clienteId}`}
           className="absolute top-6 left-6 text-gray-600 hover:text-gray-900 transition-all hover:scale-110"
           title="Volver atrás"
         >
@@ -231,7 +231,7 @@ const AddTiming = () => {
           <div className="flex gap-4 pt-4">
             <button
               type="button"
-              onClick={() => navigate(`/control/${params.clientId}`)}
+              onClick={() => navigate(`/control/${params.clienteId}`)}
               className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               Cancelar
