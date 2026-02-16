@@ -16,8 +16,10 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
     const newInitialTime = validMinutes * 60;
 
     // Detectar si los minutos cambiaron
-    const minutesChanged = lastMinutesRef.current !== null && lastMinutesRef.current !== validMinutes;
-    
+    const minutesChanged =
+      lastMinutesRef.current !== null &&
+      lastMinutesRef.current !== validMinutes;
+
     // Si ya se inicializó y los minutos no cambiaron, no hacer nada
     if (isInitializedRef.current && !minutesChanged) return;
 
@@ -37,7 +39,10 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
       startTimeRef.current = Date.now();
       initialTimeRef.current = newInitialTime;
       localStorage.setItem(`startTime_${id}`, startTimeRef.current.toString());
-      localStorage.setItem(`initialTime_${id}`, initialTimeRef.current.toString());
+      localStorage.setItem(
+        `initialTime_${id}`,
+        initialTimeRef.current.toString(),
+      );
       // Resetear fondo rojo
       setIsRedBackground(false);
       localStorage.removeItem(`isRedBackground_${id}`);
@@ -184,7 +189,9 @@ const TimerCard = ({ name, minutes, handleColor, id, identifications }) => {
               clipRule="evenodd"
             />
           </svg>
-          <span className="font-semibold">Numero de Identidad: {identifications}</span>
+          <span className="font-semibold">
+            Numero de Identidad: {identifications}
+          </span>
         </div>
 
         {/* Color de Manilla */}
